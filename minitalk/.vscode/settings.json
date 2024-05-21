@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "sstream": "c",
-        "libft.h": "c"
+        "libft.h": "c",
+        "minitalk.h": "c",
+        "stdio.h": "c",
+        "minitalk_bonus.h": "c"
     }
 }
