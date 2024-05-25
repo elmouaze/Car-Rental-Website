@@ -6,17 +6,17 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 09:31:16 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/05/21 19:51:11 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/05/25 06:12:13 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../inc/minitalk.h"
 
-#include "minitalk_bonus.h"
 static int ft_check_pid(char *id)
 {
 	int i;
 	i = 0;
-	while(i < ft_strlen(id))
+	while(i < (int)ft_strlen(id))
 	{
 		if(!ft_isdigit(id[i]))
 			return(1);
@@ -24,24 +24,45 @@ static int ft_check_pid(char *id)
 	}
 	return 0;
 }
+int	handle_input(int ac, char *av)
+{
+	int pid;
+	if (ac != 3 )
+		return (ft_putstr_fd("Usage:<server-pid> <string>\n",1),-1);
+	pid = ft_atoi(av);
+	if(ft_check_pid(av) || pid < 2)
+		return (ft_putstr_fd("Invalid pid",1),-1);
+	else
+		return (pid);
+}
+
+void sigusr_handler(int signum)
+{
+	static int count;
+
+	count = 0;
+	if (signum == SIGUSR2)
+		count++;
+		write(1, "Message received.\n", 18);
+}
 int main(int ac, char **av)
 {
     int	i;
 	char c;
     char *str;
     int pid;
+	int count;
 
 	i = 0;
-    c = 0;
+	pid = handle_input(ac, av[1]);
+	if (pid == -1)
+		return 1;
+	count = 0;
     str = av[2];
-	pid = ft_atoi(av[1]);
-	if (ac != 3 )
-		return (ft_putstr_fd("Usage:<server-pid> <string>\n",1),NULL);
-	if(ft_check_pid(av[1]) || pid < 2)
-		return (ft_putstr_fd("Invalid pid",1),NULL);
-	while (*str)
+	signal(SIGUSR2, sigusr_handler);
+	while (count <= ft_strlen(str))
 	{
-		c = *(str);
+		c = str[count];
 		while (i < 8)
 		{  
 			if (c << i & 0b10000000)
@@ -51,8 +72,9 @@ int main(int ac, char **av)
 			i++;
 			usleep(500);
 		}
-		str++;
+		count++;
 		i = 0;
 	}
+
     return (0);
 }

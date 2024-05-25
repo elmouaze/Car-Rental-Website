@@ -1,32 +1,31 @@
-LIBFTOBJ = libft/libft.a
-
-CCFLAGS = cc #-Wall -Werror #-Wextra
-
+CCFLAGS = cc -Wall -Werror -Wextra
 SERVER = server
 CLIENT = client
+HEADER = ./inc/minitalk.h
 SRCS_SERVER = mandatory/server.c
 SRCS_CLIENT = mandatory/client.c
-SRCS_CLIENT_BONUS = client_bonus
-SRCS_SERVER_BONUS = server_bonus
+LIBFT = ./libft/libft.a
+LIBFT_DIR = ./libft
 
-OBJS_SERVER = $(SRCS_SERVER:.c=.o) 
-OBJS_CLIENT = $(SRCS_CLIENT:.c=.o)
+LIBFT_SRCS = $(wildcard $(LIBFT_DIR)/*.c $(LIBFT_DIR)/*.h)
 
-all: $(SERVER) $(CLIENT)
+all: $(LIBFT) $(SERVER) $(CLIENT) 
 
-$(SERVER): $(LIBFT)
-		$(CCFLAGS) $(LIBFTOBJ)  $(SRCS_SERVER) -o $(SERVER) 
+$(LIBFT): $(LIBFT_SRCS)
+		make -C ./libft
 
-$(CLIENT): $(LIBFT)
-		$(CCFLAGS) $(LIBFTOBJ)  $(SRCS_CLIENT) -o $(CLIENT) 
+$(SERVER): $(LIBFT) $(SRCS_SERVER) $(HEADER)
+		$(CCFLAGS) $(LIBFT)  $(SRCS_SERVER) -o $(SERVER) 
 
-$(LIBFT):
-		${MAKE} -C ./libft
+$(CLIENT): $(LIBFT) $(SRCS_CLIENT) $(HEADER)
+		$(CCFLAGS) $(LIBFT)  $(SRCS_CLIENT) -o $(CLIENT) 
+
 
 clean:	
-		rm -rf ${OBJS_SERVER} ${OBJS_CLIENT} 
+		make -C ./libft clean
 
-fclean:	clean
-		rm -rf $(SERVER) $(CLIENT)
+fclean:
+		make -C ./libft fclean
+		rm -f $(SERVER) $(CLIENT)
 
 re:	fclean all

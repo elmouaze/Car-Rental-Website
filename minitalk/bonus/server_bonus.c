@@ -6,18 +6,28 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 09:31:08 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/05/21 19:58:49 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/05/25 06:11:52 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "minitalk_bonus.h"
+#include "../inc/minitalk.h"
 
-static void ft_handler(int signal, siginfo_t *info)
+static void ft_handler(int signal, siginfo_t *info,void *cont)
 {
     static unsigned char c;
     static int i;
-
+    static int pid;
+    
+    (void)cont;
+    if (!pid)
+        pid = info->si_pid;
+    else if(pid != info->si_pid)
+    {
+            i = 0;
+            c = 0;
+            pid = info->si_pid;
+    }
     if (signal == SIGUSR2)
         c = c << 1; 
     else if(signal == SIGUSR1)
@@ -25,17 +35,23 @@ static void ft_handler(int signal, siginfo_t *info)
     i++;
     if (i == 8)
     {
-        write(1, &c, 1);
+        if (c)
+            write(1, &c, 1);
+        else
+        {
+            write(1,"\n",1);
+            kill(pid, SIGUSR2);
+        }
         i = 0;
         c = 0;
     }
-}
 
+}
 
 int main(void)
 {
     struct sigaction action;
-    
+
 	action.sa_sigaction = &ft_handler;
 	action.sa_flags = SA_SIGINFO;
     

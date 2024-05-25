@@ -6,7 +6,7 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 09:29:46 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/05/21 20:50:07 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/05/25 05:22:33 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static int ft_check_pid(char *id)
 {
 	int i;
 	i = 0;
-	while(i < ft_strlen(id))
+	while(i < (int)ft_strlen(id))
 	{
 		if(!ft_isdigit(id[i]))
 			return(1);
@@ -46,6 +46,7 @@ int main(int ac, char **av)
 	i = 0;
     c = 0;
 	pid = handle_input(ac, av[1]);
+	ft_putnbr_fd(getpid(),1);
 	if (pid == -1)
 		return 1;
     str = av[2];
