@@ -6,7 +6,7 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 09:31:16 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/05/25 06:12:13 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/05/26 11:45:59 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int main(int ac, char **av)
 			else
 				kill(pid, SIGUSR2);
 			i++;
-			usleep(500);
+			usleep(1000);
 		}
 		count++;
 		i = 0;

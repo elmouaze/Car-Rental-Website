@@ -6,12 +6,13 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/27 01:05:37 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/05/25 05:22:02 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/05/26 11:20:42 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "../inc/minitalk.h"
+
 
 static void ft_handler(int signal, siginfo_t *info,void *cont)
 {
@@ -40,6 +41,7 @@ static void ft_handler(int signal, siginfo_t *info,void *cont)
         c = 0;
     }
 }
+ 
 
 int main(void)
 {
