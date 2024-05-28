@@ -6,54 +6,57 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 09:29:46 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/05/26 00:58:01 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/05/28 02:16:42 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minitalk.h"
 
-static int ft_check_pid(char *id)
+static int	ft_check_pid(char *id)
 {
-	int i;
+	int	i;
+
 	i = 0;
-	while(i < (int)ft_strlen(id))
+	while (i < (int)ft_strlen(id))
 	{
-		if(!ft_isdigit(id[i]))
-			return(1);
+		if (!ft_isdigit (id[i]))
+			return (1);
 		i++;
 	}
-	return 0;
+	return (0);
 }
+
 int	handle_input(int ac, char *av)
 {
-	int pid;
-	if (ac != 3 )
-		return (ft_putstr_fd("Usage:<server-pid> <string>\n",1),-1);
+	int	pid;
+
+	if (ac != 3)
+		return (ft_putstr_fd ("Usage:<server-pid> <string>\n", 1), -1);
 	pid = ft_atoi(av);
-	if(ft_check_pid(av) || pid < 2)
-		return (ft_putstr_fd("Invalid pid",1),-1);
+	if (ft_check_pid (av) || pid < 2)
+		return (ft_putstr_fd ("Invalid pid", 1), -1);
 	else
 		return (pid);
 }
 
-int main(int ac, char **av)
+int	main(int ac, char **av)
 {
-    int	i;
-	char c;
-    char *str;
-    int pid;
+	int		i;
+	char	c;
+	char	*str;
+	int		pid;
 
-	i = 0;
-    c = 0;
+	c = 0;
 	pid = handle_input(ac, av[1]);
 	if (pid == -1)
-		return 1;
-    str = av[2];
+		return (1);
+	str = av[2];
 	while (*str)
 	{
-		c = *(str);
+		i = 0;
+		c = *(str++);
 		while (i < 8)
-		{  
+		{
 			if (c << i & 0b10000000)
 				kill(pid, SIGUSR1);
 			else
@@ -61,8 +64,6 @@ int main(int ac, char **av)
 			i++;
 			usleep(500);
 		}
-		str++;
-		i = 0;
 	}
-    return (0);
+	return (0);
 }
