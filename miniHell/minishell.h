@@ -6,7 +6,7 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 23:20:03 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/07/12 00:16:16 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/07/13 06:00:52 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ typedef enum e_token
 
 struct cmd_infos
 {
-	char *word;
+	char **cmd;
 	t_token tok;
-	
+	t_redit *red;
 	struct cmd_infos *next;
 };
 

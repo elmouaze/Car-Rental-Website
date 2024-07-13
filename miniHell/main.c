@@ -6,7 +6,7 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 23:19:47 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/07/12 00:09:26 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/07/13 05:38:14 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,21 @@ int skip(char *line,char c)
 	{
 		if (*line == c)
 			return (cpt);
+		cpt++;
 		line++;
 	}
-	if (*line == '\0' && c == ' ')
-		return (cpt);
 	return (-1);
 }
 
-
+void replace_c(char *line, char from, char to,int stop)
+{
+	while (stop >= 0)
+	{
+		if (line[stop] == from)
+			line[stop] = to;
+		stop--;		
+	}
+}
 int syn_error(char *str)
 {
 	printf("Morzesh : %s  error \n",str);
@@ -56,17 +63,31 @@ int syn_error(char *str)
 struct command *parsing(char *line)
 {
 	struct command *cmd;
-	char symbols[] = "<|>";
+	char *tmp;
+	char **tokens;
+	int i, q;
+	i = 0;
+	q = 0;
+	tmp = line;
 	while (*line)
 	{
-		while (*line == " ")
-			line++;
-		if (strchr(symbols,*line))
-		{
-			
+		if ((*line == '"' || *line ==  '\'' ) && skip(line, *line) > 0)
+		{ 
+			q = skip(line,*line);
+			replace_c(line,' ', 127,q);
+			line += q;
 		}
-		if (*line)
-			line++;	
+		line++;
+	}
+	tokens = ft_split(tmp, ' ');
+	while (tokens[i])
+	{
+		replace_c(tokens[i], 127, ' ',ft_strlen(tokens[i]));
+		i++;
+	}
+	for (int x = 0; tokens[x];x++)
+	{
+		printf("%s\n",tokens[x]);
 	}
 	return cmd;
 }
@@ -87,7 +108,6 @@ int main()
 		// 	return (free(line_read),syn_error("unclosed quotes"));
 		//cmd = ft_split(line_read, '|');
 		// while (*cmd && cmd && **cmd )
-		printf("%s\n",new_line);
 	}
 	return 1;
 }
