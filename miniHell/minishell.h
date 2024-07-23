@@ -6,9 +6,14 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 23:20:03 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/07/13 06:00:52 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/07/23 08:29:32 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
+#ifndef MINISHELL_H
+# define MINISHELL_H
+
 
 #include <stdio.h>
 #include <unistd.h>
@@ -22,21 +27,35 @@ typedef enum e_token
 {
 	PIPE,
 	HEREDOC,
-	LPR,
-	RPR,
+	RI,
+	RO,
 	APPEND,
-	END
-}	t_token;
+	WORD,
+	EXPANDABLE,
+	ENV,
+}	token;
 
-struct cmd_infos
+typedef struct tokens 
 {
+	char *str;
+	token type;
+	struct tokens *next;
+}		t_token;
+
+ struct cmd_infos
+{
+	char *line;
 	char **cmd;
-	t_token tok;
-	t_redit *red;
-	struct cmd_infos *next;
+	struct t_token *tok;
 };
 
-struct my_cmd {
+typedef struct my_cmd {
 	struct cmd_infos *infos;
 	struct cmd *next;
 } command;
+
+t_token *lexer(char *lin);
+t_token *new_token(char *str, token type);
+void	add_token(t_token **lst, t_token *new);
+
+#endif

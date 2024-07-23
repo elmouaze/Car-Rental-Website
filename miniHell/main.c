@@ -6,7 +6,7 @@
 /*   By: ael-moua <ael-moua@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 23:19:47 by ael-moua          #+#    #+#             */
-/*   Updated: 2024/07/13 05:38:14 by ael-moua         ###   ########.fr       */
+/*   Updated: 2024/07/23 09:13:11 by ael-moua         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,87 +27,99 @@ char *rl_gets (char *str,char *line_read)
   return (line_read);
 }
 
-int skip(char *line,char c)
+int syn_error(char *str)
 {
-	int cpt;
-	//:(){:|:&};:
-	cpt = 0;
-
-	line++;
-	cpt++;
-	while (*line)
+	printf("Morzesh : syntax error near unexpected token %s \n",str);
+	exit(1);
+	return (-1);
+}
+int skip_quotes(char *line,char c)
+{
+	int cpt ;
+	cpt = 1;
+	while (line[cpt])
 	{
-		if (*line == c)
+		if (line[cpt] == c)
 			return (cpt);
 		cpt++;
-		line++;
 	}
+	syn_error("Quotes");
 	return (-1);
 }
 
-void replace_c(char *line, char from, char to,int stop)
+
+
+int append_operator(char *line, t_token **tokens)
 {
-	while (stop >= 0)
+	if (*line == '<')
 	{
-		if (line[stop] == from)
-			line[stop] = to;
-		stop--;		
-	}
+		if (*(line + 1) == '<')
+			return (add_token(tokens,new_token(ft_strdup("<<"),HEREDOC)),2);
+		else 
+			return (add_token(tokens,new_token(ft_strdup("<"),RI)),1);
+	}else if (*line == '>')
+	{
+		if (*(line + 1) == '>')
+			return (add_token(tokens,new_token(ft_strdup(">>"),APPEND)),2);
+		else 
+			return (add_token(tokens,new_token(ft_strdup(">"),RO)),1);
+	}else if (*line == '|')
+		return( add_token(tokens,new_token(ft_strdup("|"),PIPE)),1);
+	return 0;
 }
-int syn_error(char *str)
+int append_cmd(char *line, t_token **tokens)
 {
-	printf("Morzesh : %s  error \n",str);
-	return 2;
+	char *str;
+	int steps ;
+	steps = 0;
+	while (line[steps] && line[steps] != ' ' && 
+		!(line[steps] == '<' || line[steps] == '>' || line[steps] == '|'))
+	{
+		if (line[steps] == '"' || line[steps] == '\'')
+			steps += skip_quotes(line + steps, line[steps]);
+		else
+			steps++;
+	}
+	add_token(tokens,new_token(ft_substr(line,0,steps),WORD));
+	return (steps);
 }
 
-struct command *parsing(char *line)
+t_token  *lexer(char *line)
 {
-	struct command *cmd;
-	char *tmp;
-	char **tokens;
-	int i, q;
-	i = 0;
+	int i = 0, q,end;
+	t_token *tokens = NULL;
 	q = 0;
-	tmp = line;
 	while (*line)
 	{
-		if ((*line == '"' || *line ==  '\'' ) && skip(line, *line) > 0)
-		{ 
-			q = skip(line,*line);
-			replace_c(line,' ', 127,q);
-			line += q;
-		}
-		line++;
+		while (*line ==  ' ')
+			line++;
+		if (*line == '<' || *line == '>' || *line == '|' )
+			line += append_operator(line, &tokens);
+		else 
+			line += append_cmd(line, &tokens);
 	}
-	tokens = ft_split(tmp, ' ');
-	while (tokens[i])
-	{
-		replace_c(tokens[i], 127, ' ',ft_strlen(tokens[i]));
-		i++;
-	}
-	for (int x = 0; tokens[x];x++)
-	{
-		printf("%s\n",tokens[x]);
-	}
-	return cmd;
+	return tokens;
 }
 
 int main()
 {
-	static char *line_read = (char *)NULL;
+	static char *line_read = NULL;
 	char *new_line;
-	struct command *cmd;
+	t_token *tokens;
 	
+	tokens = NULL;
 	while (1)
 	{
 		line_read = rl_gets("MiniHell: ",line_read);
 		if (!line_read)
 			return (syn_error("line read"));
 		new_line = ft_strtrim(line_read, " \t\r\n\v");
-		cmd = parsing(new_line);
-		// 	return (free(line_read),syn_error("unclosed quotes"));
-		//cmd = ft_split(line_read, '|');
-		// while (*cmd && cmd && **cmd )
+		tokens = lexer(new_line);
+		while (tokens)
+		{
+			printf("str = %s  type = %d\n",tokens->str,tokens->type);
+			tokens = tokens->next;
+		}
 	}
-	return 1;
+	return (1);
 }
